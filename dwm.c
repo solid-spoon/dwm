@@ -51,6 +51,7 @@ int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 unsigned int numlockmask = 0;
 Atom wmatom[WMLast], netatom[NetLast];
+Atom themeatom;
 static int running = 1;
 int enablegaps = 1;
 Cur *cursor[CurLast];
@@ -184,6 +185,30 @@ scan(void)
 }
 
 void
+settheme(int idx)
+{
+	int i;
+	Monitor *m;
+	Client *c;
+
+	if (idx < 0 || idx >= (int)themes_count)
+		return;
+
+	for (i = 0; i < (int)LENGTH(colors); i++) {
+		Clr *old = scheme[i];
+		scheme[i] = drw_scm_create(drw, themes[idx].colors[i], 3);
+		drw_scm_free(drw, old, 3);
+	}
+
+	for (m = mons; m; m = m->next)
+		for (c = m->clients; c; c = c->next)
+			XSetWindowBorder(dpy, c->win,
+				scheme[c == m->sel ? SchemeSel : SchemeNorm][ColBorder].pixel);
+
+	drawbars();
+}
+
+void
 setup(void)
 {
 	int i;
@@ -229,6 +254,7 @@ setup(void)
 	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
+	themeatom = XInternAtom(dpy, "_DWM_THEME", False);
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
