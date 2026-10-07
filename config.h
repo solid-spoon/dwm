@@ -22,12 +22,7 @@ const char *colors[][3]      = {
 };
 
 /* ---- THEMES ---- */
-typedef struct {
-	const char *name;
-	const char *colors[2][3]; /* [SchemeNorm/SchemeSel][fg/bg/border] */
-} Theme;
-
-const Theme themes[] = {
+Theme themes[] = {
 	{ "gruvbox",
 	  { { "#ebdbb2", "#282828", "#3c3836" },
 	    { "#fbf1c7", "#458588", "#458588" } } },
@@ -142,6 +137,7 @@ const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	{ MODKEY,                       XK_F1,     spawn,          SHCMD("dwm-theme") },
+	{ MODKEY,                       XK_z,      togglegaps,     {0} },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
