@@ -45,6 +45,10 @@ static const Layout layouts[] = {
 	{ "[M]",      monocle },
 };
 
+/* gaps */
+static const unsigned int gappx     = 8;   /* размер отступа в пикселях */
+static const int smartgaps          = 1;   /* 1 = не показывать внешний отступ, если окно одно */
+
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
