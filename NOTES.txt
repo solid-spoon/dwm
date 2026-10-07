@@ -1,0 +1,63 @@
+NOTES - dwm 6.8 split into modules
+==================================
+
+Renamed files
+  None. The archive already had correct names (dwm.c, drw.h, drw.c, util.c,
+  util.h, config.h, config.def.h, transient.c, dwm.1). Verified by content.
+
+State of the archive on arrival
+  - client.c, monitor.c, layout.c, event.c, draw.c existed as empty stubs.
+  - A draft dwm.h existed; it was replaced (it lacked <X11/keysym.h>, the
+    dmenumon/dmenucmd/termcmd externs, and the trailing comments on the
+    enums/struct members).
+  - config.h and config.def.h already had `static` removed (grep confirms 0
+    matches); drw.h already had its guard and includes. Left as-is, except
+    drw.h got a missing trailing newline.
+
+Edited
+  dwm.h (new), dwm.c, client.c, monitor.c, layout.c, event.c, draw.c,
+  util.h (guard + <stddef.h>), drw.h (newline only), Makefile (SRC line only).
+
+Untouched files
+  drw.c, util.c, transient.c, config.mk, dwm.1, config.h, config.def.h,
+  LICENSE, README, dwm.png.
+
+Deviations from the task text (section 14: follow the sources)
+  1. event.c and draw.c additionally #include <X11/Xatom.h>. The include lists
+     in section 6 omit it, but propertynotify() and updatestatus() use
+     XA_WM_NAME / XA_WM_TRANSIENT_FOR / XA_WM_NORMAL_HINTS / XA_WM_HINTS and
+     do not compile without it.
+  2. dwm.c no longer includes <errno.h> or <stdarg.h> (not in the section 6
+     list; nothing there needs them).
+  3. handler[] in event.c keeps the original formatting; only `static` was
+     removed. The snippet in 3.5 is realigned, which would be a reformat.
+  4. Prototypes in dwm.h are the original declarations with `static` removed
+     (one space after the type) rather than the column-aligned form shown in
+     section 4.
+  5. Section 11 says `grep LENGTH(keys|buttons|rules|layouts) *.c` must be
+     empty, but section 3.2 requires those exact LENGTH() calls in dwm.c to
+     define the *_count constants. Followed 3.2: they appear once each in
+     dwm.c and nowhere else. LENGTH(tags) appears in dwm.c only (NumTags,
+     tagmask, tags_count).
+  6. isuniquegeom() sits in monitor.c where it was in the original order
+     (after incnmaster), still inside #ifdef XINERAMA.
+
+Verification done
+  - Function bodies: a line-multiset diff of old dwm.c vs new sources shows
+    only these differences: `static` removed, 9 LENGTH(x) -> x_count swaps,
+    TAGMASK macro, includes, header boilerplate, new count definitions.
+  - make with the project's flags (-std=c99 -pedantic -Wall): 0 warnings.
+    (The original warned "togglegaps defined but not used".)
+  - No duplicate global symbols across objects; every dwm.h prototype has
+    exactly one definition; broken/running/xerrorxlib are file-local.
+  - Smoke test under Xvfb: dwm started, took over the root window, and
+    managed two xeyes clients.
+
+Things to know
+  - Makefile objects depend on config.h and config.mk but not dwm.h (that
+    line was not to be touched). After editing dwm.h run `make clean`.
+  - The Makefile `dist` target copies ${SRC}, so the new .c files are
+    included automatically, but dwm.h is not in its header list.
+  - TAGMASK is now the runtime constant `tagmask` (unsigned, 1u << n) as
+    specified; behaviour is identical for up to 31 tags.
+  - Nothing was committed; changes are in the working tree.

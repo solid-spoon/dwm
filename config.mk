@@ -28,8 +28,12 @@ LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}
 # flags
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
 #CFLAGS   = -g -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
-CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -Os ${INCS} ${CPPFLAGS}
-LDFLAGS  = ${LIBS}
+# -march=native tunes the binary for the CPU it is built on: remove it for
+# portable builds (building on one machine, running on another).
+# -flto: link-time optimisation; drop it from both CFLAGS and LDFLAGS if the
+# toolchain has no LTO support.
+CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -O2 -pipe -fno-plt -march=native -flto ${INCS} ${CPPFLAGS}
+LDFLAGS  = -flto -Wl,-O1,--as-needed ${LIBS}
 
 # Solaris
 #CFLAGS = -fast ${INCS} -DVERSION=\"${VERSION}\"

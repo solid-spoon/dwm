@@ -23,6 +23,7 @@ createmon(void)
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % layouts_count];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+	m->ltsymbolw = TEXTW(m->ltsymbol);
 	return m;
 }
 
@@ -103,6 +104,7 @@ setlayout(const Arg *arg)
 	if (arg && arg->v)
 		selmon->lt[selmon->sellt] = (Layout *)arg->v;
 	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
+	selmon->ltsymbolw = TEXTW(selmon->ltsymbol);
 	if (selmon->sel)
 		arrange(selmon);
 	else

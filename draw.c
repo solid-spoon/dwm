@@ -20,7 +20,7 @@ drawbar(Monitor *m)
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
-		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
+		tw = stextw - lrpad + 2; /* 2px right padding */
 		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
 	}
 
@@ -31,7 +31,7 @@ drawbar(Monitor *m)
 	}
 	x = 0;
 	for (i = 0; i < tags_count; i++) {
-		w = TEXTW(tags[i]);
+		w = tagw[i];
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 		if (occ & 1 << i)
@@ -40,7 +40,7 @@ drawbar(Monitor *m)
 				urg & 1 << i);
 		x += w;
 	}
-	w = TEXTW(m->ltsymbol);
+	w = m->ltsymbolw;
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
 
@@ -70,7 +70,14 @@ drawbars(void)
 void
 updatestatus(void)
 {
-	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
-		strcpy(stext, "dwm-"VERSION);
+	char buf[sizeof stext];
+
+	if (!gettextprop(root, XA_WM_NAME, buf, sizeof buf))
+		strcpy(buf, "dwm-"VERSION);
+	if (strcmp(buf, stext) == 0)
+		return;
+	strncpy(stext, buf, sizeof stext - 1);
+	stext[sizeof stext - 1] = '\0';
+	stextw = TEXTW(stext);
 	drawbar(selmon);
 }

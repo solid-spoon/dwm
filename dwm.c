@@ -42,6 +42,8 @@
 
 /* variables */
 char stext[256];
+unsigned int tagw[32]; /* cached text widths; stextw is updated in updatestatus */
+unsigned int stextw;
 int screen;
 int sw, sh;           /* X display screen geometry width, height */
 int bh;               /* bar height */
@@ -208,6 +210,9 @@ setup(void)
 		die("no fonts could be loaded.");
 	lrpad = drw->fonts->h;
 	bh = drw->fonts->h + 2;
+	for (i = 0; i < (int)tags_count; i++)
+		tagw[i] = TEXTW(tags[i]);
+	stextw = TEXTW(stext);
 	updategeom();
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);

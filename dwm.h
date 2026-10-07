@@ -80,6 +80,7 @@ typedef struct {
 
 struct Monitor {
 	char ltsymbol[16];
+	unsigned int ltsymbolw; /* cached TEXTW(ltsymbol) */
 	float mfact;
 	int nmaster;
 	int num;
@@ -141,6 +142,8 @@ extern const unsigned int tags_count;
 
 /* ---- global runtime state ---- */
 extern char stext[256];
+extern unsigned int tagw[32];
+extern unsigned int stextw;
 extern int screen;
 extern int sw, sh;
 extern int bh;
