@@ -368,6 +368,17 @@ propertynotify(XEvent *e)
 
 	if ((ev->window == root) && (ev->atom == XA_WM_NAME))
 		updatestatus();
+	else if ((ev->window == root) && (ev->atom == themeatom)) {
+		char name[64];
+		unsigned int i;
+		gettextprop(root, themeatom, name, sizeof name);
+		for (i = 0; i < themes_count; i++) {
+			if (strcmp(themes[i].name, name) == 0) {
+				settheme(i);
+				break;
+			}
+		}
+	}
 	else if (ev->state == PropertyDelete)
 		return; /* ignore */
 	else if ((c = wintoclient(ev->window))) {
