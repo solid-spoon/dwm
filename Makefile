@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = drw.c dwm.c util.c
+SRC = drw.c dwm.c client.c monitor.c layout.c event.c draw.c util.c
 OBJ = ${SRC:.c=.o}
 
 all: dwm
