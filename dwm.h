@@ -132,6 +132,8 @@ extern const Button buttons[];
 extern char dmenumon[2];
 extern const char *dmenucmd[];
 extern const char *termcmd[];
+extern const unsigned int themes_count;
+extern const Theme themes[];
 
 /* ---- computed sizes ---- */
 extern const unsigned int keys_count;
@@ -141,6 +143,7 @@ extern const unsigned int layouts_count;
 extern const unsigned int tags_count;
 
 /* ---- global runtime state ---- */
+extern Atom themeatom;
 extern char stext[256];
 extern unsigned int tagw[32];
 extern unsigned int stextw;
@@ -160,6 +163,7 @@ extern Monitor *mons, *selmon;
 extern Window root, wmcheckwin;
 
 /* ---- prototypes ---- */
+void settheme(int idx);
 void applyrules(Client *c);
 int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
 void arrange(Monitor *m);
