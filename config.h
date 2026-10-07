@@ -46,8 +46,8 @@ static const Layout layouts[] = {
 };
 
 /* gaps */
-static const unsigned int gappx     = 8;   /* размер отступа в пикселях */
-static const int smartgaps          = 1;   /* 1 = не показывать внешний отступ, если окно одно */
+static const unsigned int gappx     = 8;
+static const int smartgaps          = 1;
 
 /* key definitions */
 #define MODKEY Mod4Mask
