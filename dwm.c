@@ -168,6 +168,7 @@ static void focus(Client *c);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc);
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -208,6 +209,7 @@ static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *m);
+static void togglegaps(const Arg *arg);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -260,6 +262,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 };
 static Atom wmatom[WMLast], netatom[NetLast];
 static int running = 1;
+static int enablegaps = 1;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -1508,6 +1511,13 @@ setfullscreen(Client *c, int fullscreen)
 }
 
 void
+togglegaps(const Arg *arg)
+{
+	enablegaps = !enablegaps;
+	arrange(selmon);
+}
+
+void
 setlayout(const Arg *arg)
 {
 	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
@@ -1685,30 +1695,52 @@ tagmon(const Arg *arg)
 }
 
 void
+getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc)
+{
+	unsigned int n, oe, ie;
+	Client *c;
+
+	oe = ie = enablegaps;
+	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if (smartgaps && n == 1)
+		oe = 0;   /* внешний отступ выключается для одного окна */
+
+	*oh = gappx * oe;
+	*ov = gappx * oe;
+	*ih = gappx * ie;
+	*iv = gappx * ie;
+	*nc = n;
+}
+
+void
 tile(Monitor *m)
 {
 	unsigned int i, n, h, mw, my, ty;
+	int oh, ov, ih, iv;
 	Client *c;
 
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
 	if (n == 0)
 		return;
 
 	if (n > m->nmaster)
-		mw = m->nmaster ? m->ww * m->mfact : 0;
+		mw = m->nmaster ? (m->ww - 2 * ov - ih) * m->mfact : 0;
 	else
-		mw = m->ww;
+		mw = m->ww - 2 * ov;
+
 	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
 		if (i < m->nmaster) {
-			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
-			if (my + HEIGHT(c) < m->wh)
-				my += HEIGHT(c);
+			h = (m->wh - my - 2 * ov - (MIN(n, m->nmaster) - i - 1) * iv) /
+			    (MIN(n, m->nmaster) - i);
+			resize(c, m->wx + ov, m->wy + ov + my,
+			       mw - (2 * c->bw), h - (2 * c->bw), 0);
+			my += HEIGHT(c) + iv;
 		} else {
-			h = (m->wh - ty) / (n - i);
-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
-			if (ty + HEIGHT(c) < m->wh)
-				ty += HEIGHT(c);
+			h = (m->wh - ty - 2 * ov - (n - i - 1) * iv) / (n - i);
+			resize(c, m->wx + ov + mw + ih, m->wy + ov + ty,
+			       m->ww - 2 * ov - mw - ih - (2 * c->bw),
+			       h - (2 * c->bw), 0);
+			ty += HEIGHT(c) + iv;
 		}
 }
 
