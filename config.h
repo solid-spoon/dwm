@@ -21,6 +21,34 @@ const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
+/* ---- THEMES ---- */
+typedef struct {
+	const char *name;
+	const char *colors[2][3]; /* [SchemeNorm/SchemeSel][fg/bg/border] */
+} Theme;
+
+const Theme themes[] = {
+	{ "gruvbox",
+	  { { "#ebdbb2", "#282828", "#3c3836" },
+	    { "#fbf1c7", "#458588", "#458588" } } },
+	{ "tokyo-night",
+	  { { "#a9b1d6", "#1a1b26", "#414868" },
+	    { "#c0caf5", "#7aa2f7", "#7aa2f7" } } },
+	{ "catppuccin",
+	  { { "#cdd6f4", "#1e1e2e", "#45475a" },
+	    { "#f5e0dc", "#89b4fa", "#89b4fa" } } },
+	{ "nord",
+	  { { "#d8dee9", "#2e3440", "#4c566a" },
+	    { "#eceff4", "#88c0d0", "#88c0d0" } } },
+	{ "dracula",
+	  { { "#f8f8f2", "#282a36", "#44475a" },
+	    { "#f8f8f2", "#bd93f9", "#bd93f9" } } },
+	{ "solarized-dark",
+	  { { "#839496", "#002b36", "#073642" },
+	    { "#fdf6e3", "#268bd2", "#268bd2" } } },
+};
+const unsigned int themes_count = LENGTH(themes);
+
 /* tagging */
 const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
