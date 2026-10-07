@@ -109,6 +109,12 @@ typedef struct {
 	int monitor;
 } Rule;
 
+/* themes */
+typedef struct {
+	const char *name;
+	const char *colors[2][3]; /* [SchemeNorm/SchemeSel][fg/bg/border] */
+} Theme;
+
 /* ---- config.h externs ---- */
 extern const unsigned int borderpx;
 extern const unsigned int snap;
@@ -132,8 +138,8 @@ extern const Button buttons[];
 extern char dmenumon[2];
 extern const char *dmenucmd[];
 extern const char *termcmd[];
+extern Theme themes[];
 extern const unsigned int themes_count;
-extern const Theme themes[];
 
 /* ---- computed sizes ---- */
 extern const unsigned int keys_count;
